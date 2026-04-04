@@ -1,0 +1,15 @@
+@namespace("ru.yandex.practicum.kafka.telemetry.event")
+protocol SnapshotProtocol {
+
+  record SensorStateAvro {
+    long timestamp;
+    union { null, string } data = null;
+  }
+
+  record SensorsSnapshotAvro {
+    string hubId;
+    long timestamp;
+    map<SensorStateAvro> sensorsState;
+  }
+
+}

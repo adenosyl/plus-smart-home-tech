@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+
+kafka:
+  bootstrap-servers: localhost:9092
+
+grpc:
+  server:
+    port: 9090
+
+  client:
+    hub-router:
+      address: static://localhost:9090
+      negotiationType: plaintext
+
+logging:
+  level:
+    root: INFO
+    ru.yandex.practicum: INFO

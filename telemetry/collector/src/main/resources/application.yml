@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: collector
+
+  kafka:
+    bootstrap-servers: localhost:9092

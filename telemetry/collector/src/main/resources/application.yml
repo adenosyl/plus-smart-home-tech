@@ -7,3 +7,9 @@ spring:
 
   kafka:
     bootstrap-servers: localhost:9092
+
+grpc:
+  client:
+    collector:
+      address: 'static://localhost:9090'
+      negotiationType: plaintext

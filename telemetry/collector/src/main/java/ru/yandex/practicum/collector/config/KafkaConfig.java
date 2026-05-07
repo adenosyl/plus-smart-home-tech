@@ -7,25 +7,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.*;
 
+import ru.yandex.practicum.kafka.telemetry.event.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 public class KafkaConfig {
 
-    @Bean
-    public ProducerFactory<String, byte[]> producerFactory() {
+    private Map<String, Object> baseConfig() {
         Map<String, Object> config = new HashMap<>();
 
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                ru.yandex.practicum.collector.serializer.AvroSerializer.class);
 
-        return new DefaultKafkaProducerFactory<>(config);
+        return config;
     }
 
     @Bean
-    public KafkaTemplate<String, byte[]> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public KafkaTemplate<String, SensorEventAvro> sensorKafkaTemplate() {
+        ProducerFactory<String, SensorEventAvro> factory =
+                new DefaultKafkaProducerFactory<>(baseConfig());
+
+        return new KafkaTemplate<>(factory);
+    }
+
+    @Bean
+    public KafkaTemplate<String, HubEventAvro> hubKafkaTemplate() {
+        ProducerFactory<String, HubEventAvro> factory =
+                new DefaultKafkaProducerFactory<>(baseConfig());
+
+        return new KafkaTemplate<>(factory);
     }
 }

@@ -7,7 +7,6 @@ option java_package = "ru.yandex.practicum.grpc.telemetry.event";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
-import "telemetry/messages/sensor_event.proto";
 
 message HubEventProto {
   string hub_id = 1; // идентификатор хаба

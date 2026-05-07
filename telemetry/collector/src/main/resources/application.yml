@@ -1,15 +1,14 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: collector
 
-  kafka:
-    bootstrap-servers: localhost:9092
+  config:
+    import: configserver:http://localhost:8888
 
-grpc:
-  client:
-    collector:
-      address: 'static://localhost:9090'
-      negotiationType: plaintext
+  cloud:
+    config:
+      fail-fast: true
+
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000

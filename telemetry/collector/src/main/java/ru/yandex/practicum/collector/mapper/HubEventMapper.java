@@ -1,50 +1,58 @@
 package ru.yandex.practicum.collector.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.collector.model.*;
+
+import ru.yandex.practicum.grpc.telemetry.event.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
 @Component
 public class HubEventMapper {
 
-    public HubEventAvro toAvro(HubEvent event) {
+    public HubEventAvro toAvro(HubEventProto proto) {
 
         HubEventAvro avro = new HubEventAvro();
-        avro.setHubId(event.getHubId());
-        avro.setTimestamp(event.getTimestamp().toEpochMilli());
 
-        avro.setPayload(mapPayload(event));
+        avro.setHubId(proto.getHubId());
+        avro.setTimestamp(proto.getTimestamp().getSeconds());
+
+        avro.setPayload(mapPayload(proto));
 
         return avro;
     }
 
-    private Object mapPayload(HubEvent event) {
+    private Object mapPayload(HubEventProto proto) {
 
-        if (event instanceof DeviceAddedEvent e) {
-            DeviceAddedAvro avro = new DeviceAddedAvro();
-            avro.setId(e.getId());
-            avro.setDeviceType(e.getDeviceType());
-            return avro;
+        switch (proto.getPayloadCase()) {
+
+            case DEVICE_ADDED -> {
+                DeviceAddedAvro avro = new DeviceAddedAvro();
+
+                avro.setId(proto.getDeviceAdded().getId());
+
+                avro.setDeviceType(proto.getDeviceAdded().getType().name());
+
+                return avro;
+            }
+
+            case DEVICE_REMOVED -> {
+                DeviceRemovedAvro avro = new DeviceRemovedAvro();
+                avro.setId(proto.getDeviceRemoved().getId());
+                return avro;
+            }
+
+            case SCENARIO_ADDED -> {
+                ScenarioAddedAvro avro = new ScenarioAddedAvro();
+                avro.setName(proto.getScenarioAdded().getName());
+                return avro;
+            }
+
+            case SCENARIO_REMOVED -> {
+                ScenarioRemovedAvro avro = new ScenarioRemovedAvro();
+                avro.setName(proto.getScenarioRemoved().getName());
+                return avro;
+            }
+
+            default -> throw new IllegalArgumentException("Unknown hub event: " + proto.getPayloadCase());
         }
-
-        if (event instanceof DeviceRemovedEvent e) {
-            DeviceRemovedAvro avro = new DeviceRemovedAvro();
-            avro.setId(e.getId());
-            return avro;
-        }
-
-        if (event instanceof ScenarioRemovedEvent e) {
-            ScenarioRemovedAvro avro = new ScenarioRemovedAvro();
-            avro.setName(e.getName());
-            return avro;
-        }
-
-        if (event instanceof ScenarioAddedEvent e) {
-            ScenarioAddedAvro avro = new ScenarioAddedAvro();
-            avro.setName(e.getName());
-            return avro;
-        }
-
-        throw new IllegalArgumentException("Unknown hub event type: " + event.getClass());
     }
 }

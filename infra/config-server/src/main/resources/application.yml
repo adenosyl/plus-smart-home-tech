@@ -10,7 +10,12 @@ spring:
 
   cloud:
     config:
+      enabled: false
       server:
         native:
           search-locations:
-            - classpath:config/telemetry/{application}
+            - classpath:/config/telemetry/{application}
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

@@ -28,7 +28,11 @@ public class JwtAuthenticationFilter
                         .getURI()
                         .getPath();
 
-        if (path.startsWith("/auth")) {
+        if (path.startsWith("/auth")
+                || path.startsWith("/shopping-cart")
+                || path.startsWith("/shopping-store")
+                || path.startsWith("/warehouse")) {
+
             return chain.filter(exchange);
         }
 

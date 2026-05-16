@@ -1,33 +1,17 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+  application:
+    name: analyzer
 
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+  config:
+    import: "configserver:"
 
-  h2:
-    console:
-      enabled: true
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
 
-kafka:
-  bootstrap-servers: localhost:9092
-
-grpc:
-  server:
-    port: 9090
-
+eureka:
   client:
-    hub-router:
-      address: static://localhost:9090
-      negotiationType: plaintext
-
-logging:
-  level:
-    root: INFO
-    ru.yandex.practicum: INFO
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/

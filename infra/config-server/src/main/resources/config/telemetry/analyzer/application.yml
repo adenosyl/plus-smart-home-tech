@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: analyzer
+
+server:
+  port: 8082
+
+grpc:
+  server:
+    port: 9091
+
+kafka:
+  bootstrap-servers: localhost:9092
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

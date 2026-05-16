@@ -1,15 +1,17 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: collector
 
-  kafka:
-    bootstrap-servers: localhost:9092
+  config:
+    import: "configserver:"
 
-grpc:
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: config-server
+
+eureka:
   client:
-    collector:
-      address: 'static://localhost:9090'
-      negotiationType: plaintext
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname:localhost}:${eureka.instance.port:8761}/eureka/

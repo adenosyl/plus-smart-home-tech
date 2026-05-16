@@ -17,6 +17,9 @@
         <module>warehouse</module>
         <module>shopping-cart</module>
         <module>api-gateway</module>
+        <module>order</module>
+        <module>payment</module>
+        <module>delivery</module>
     </modules>
 
 </project>

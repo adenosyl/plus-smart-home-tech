@@ -6,42 +6,43 @@ import ru.yandex.practicum.cart.dto.ShoppingCartDto;
 
 import java.util.UUID;
 
+@RequestMapping("/api/v1/cart")
 public interface ShoppingCartOperations {
 
-    @PostMapping("/api/v1/cart/{username}")
+    @PostMapping("/{username}")
     ShoppingCartDto create(
             @PathVariable String username
     );
 
-    @GetMapping("/api/v1/cart/{username}")
-    ShoppingCartDto getByUsername(
+    @GetMapping("/{username}")
+    ShoppingCartDto getCart(
             @PathVariable String username
     );
 
-    @PostMapping("/api/v1/cart/{username}/add")
+    @PostMapping("/{username}/add")
     ShoppingCartDto addProduct(
             @PathVariable String username,
             @RequestBody CartItemDto dto
     );
 
-    @PatchMapping("/api/v1/cart/{username}/deactivate")
+    @PatchMapping("/{username}/deactivate")
     ShoppingCartDto deactivate(
             @PathVariable String username
     );
 
-    @PatchMapping("/api/v1/cart/{username}/quantity")
+    @PatchMapping("/{username}/quantity")
     ShoppingCartDto updateQuantity(
             @PathVariable String username,
             @RequestBody CartItemDto dto
     );
 
-    @DeleteMapping("/api/v1/cart/{username}/product/{productId}")
+    @DeleteMapping("/{username}/product/{productId}")
     ShoppingCartDto removeProduct(
             @PathVariable String username,
             @PathVariable UUID productId
     );
 
-    @DeleteMapping("/api/v1/cart/{username}/clear")
+    @DeleteMapping("/{username}/clear")
     ShoppingCartDto clear(
             @PathVariable String username
     );

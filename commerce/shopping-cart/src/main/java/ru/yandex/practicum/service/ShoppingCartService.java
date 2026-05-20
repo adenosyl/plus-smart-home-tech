@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.cart.dto.CartItemDto;
@@ -14,9 +15,9 @@ import ru.yandex.practicum.model.CartState;
 import ru.yandex.practicum.repository.ShoppingCartRepository;
 import ru.yandex.practicum.warehouse.dto.BookedProductsDto;
 import ru.yandex.practicum.warehouse.dto.ShoppingCartItemDto;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class ShoppingCartService {
 
         return item;
     }
+
     public ShoppingCartDto create(String username) {
 
         ShoppingCart cart = new ShoppingCart();
@@ -49,7 +51,7 @@ public class ShoppingCartService {
         );
     }
 
-    public ShoppingCartDto getByUsername(String username) {
+    public ShoppingCartDto getCart(String username) {
 
         ShoppingCart cart = repository.findByUsername(username)
                 .orElseThrow(() ->
@@ -62,15 +64,19 @@ public class ShoppingCartService {
             name = "warehouse",
             fallbackMethod = "warehouseFallback"
     )
-    public ShoppingCartDto addProduct(String username,
-                                      CartItemDto dto) {
+    public ShoppingCartDto addProduct(
+            String username,
+            CartItemDto dto
+    ) {
 
         ShoppingCart cart = repository.findByUsername(username)
                 .orElseThrow(() ->
                         new NotFoundException("Cart not found"));
 
-        if (cart.getState() == CartState.DEACTIVATE) {
-            throw new RuntimeException("Cart is deactivated");
+        if (cart.getState() == CartState.DEACTIVATED) {
+            throw new RuntimeException(
+                    "Cart is deactivated"
+            );
         }
 
         BookedProductsDto response =
@@ -79,6 +85,7 @@ public class ShoppingCartService {
                 );
 
         if (!response.getUnavailableProducts().isEmpty()) {
+
             throw new WarehouseUnavailableException(
                     "Product unavailable in warehouse"
             );
@@ -95,7 +102,8 @@ public class ShoppingCartService {
         if (existing != null) {
 
             existing.setQuantity(
-                    existing.getQuantity() + dto.getQuantity()
+                    existing.getQuantity()
+                            + dto.getQuantity()
             );
 
         } else {
@@ -113,13 +121,15 @@ public class ShoppingCartService {
         );
     }
 
-    public ShoppingCartDto deactivate(String username) {
+    public ShoppingCartDto deactivate(
+            String username
+    ) {
 
         ShoppingCart cart = repository.findByUsername(username)
                 .orElseThrow(() ->
                         new NotFoundException("Cart not found"));
 
-        cart.setState(CartState.DEACTIVATE);
+        cart.setState(CartState.DEACTIVATED);
 
         return ShoppingCartMapper.toDto(
                 repository.save(cart)
@@ -142,7 +152,9 @@ public class ShoppingCartService {
                                 .equals(dto.getProductId()))
                 .findFirst()
                 .orElseThrow(() ->
-                        new NotFoundException("Product not found"));
+                        new NotFoundException(
+                                "Product not found"
+                        ));
 
         item.setQuantity(dto.getQuantity());
 
@@ -153,7 +165,7 @@ public class ShoppingCartService {
 
     public ShoppingCartDto removeProduct(
             String username,
-            java.util.UUID productId
+            UUID productId
     ) {
 
         ShoppingCart cart = repository.findByUsername(username)
@@ -168,7 +180,9 @@ public class ShoppingCartService {
         );
     }
 
-    public ShoppingCartDto clear(String username) {
+    public ShoppingCartDto clear(
+            String username
+    ) {
 
         ShoppingCart cart = repository.findByUsername(username)
                 .orElseThrow(() ->

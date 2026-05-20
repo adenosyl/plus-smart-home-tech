@@ -9,7 +9,7 @@ public class WarehouseItemDto {
 
     private UUID productId;
 
-    private Integer quantity;
+    private Long quantity;
 
     private Double width;
 

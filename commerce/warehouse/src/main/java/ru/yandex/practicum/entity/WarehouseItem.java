@@ -15,7 +15,7 @@ public class WarehouseItem {
     @Id
     private UUID productId;
 
-    private Integer quantity;
+    private Long quantity;
 
     private Double width;
 
